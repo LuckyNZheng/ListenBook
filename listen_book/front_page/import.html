@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>听书知识库 - 内容导入</title>
+  <style>
+    :root {
+      --bg-primary: #1a1a2e;
+      --bg-secondary: #16213e;
+      --bg-card: #0f3460;
+      --accent: #e94560;
+      --accent-light: #ff6b6b;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0a0;
+      --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --error: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg-primary);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* 侧边栏 */
+    .sidebar {
+      width: 280px;
+      background: var(--bg-secondary);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .logo-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--gradient-1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .logo-text {
+      color: var(--text-primary);
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .sidebar-nav { flex: 1; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 8px;
+    }
+
+    .nav-item:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--text-primary);
+    }
+
+    .nav-item.active {
+      background: var(--gradient-1);
+      color: var(--text-primary);
+    }
+
+    .nav-icon { font-size: 20px; }
+
+    /* 主内容 */
+    .main-content {
+      flex: 1;
+      padding: 32px 48px;
+      overflow-y: auto;
+    }
+
+    .page-header {
+      margin-bottom: 32px;
+    }
+
+    .page-title {
+      color: var(--text-primary);
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .page-desc {
+      color: var(--text-secondary);
+      font-size: 15px;
+    }
+
+    /* 上传区域 */
+    .upload-zone {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 24px;
+      border: 2px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .upload-zone.dragover {
+      border-color: var(--accent);
+      background: rgba(233, 69, 96, 0.1);
+    }
+
+    .drop-area {
+      padding: 60px;
+      border: 2px dashed rgba(255,255,255,0.2);
+      border-radius: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .drop-area:hover {
+      border-color: var(--accent);
+      background: rgba(255,255,255,0.05);
+    }
+
+    .drop-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      opacity: 0.8;
+    }
+
+    .drop-text {
+      color: var(--text-primary);
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    .drop-hint {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .file-input { display: none; }
+
+    /* 文件信息 */
+    .file-preview {
+      display: none;
+      padding: 20px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      margin-top: 20px;
+    }
+
+    .file-preview.show { display: flex; align-items: center; gap: 16px; }
+
+    .file-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--gradient-3);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .file-details { flex: 1; }
+
+    .file-name {
+      color: var(--text-primary);
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .file-size {
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    .file-remove {
+      color: var(--error);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    /* 表单区域 */
+    .form-section {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .form-title {
+      color: var(--text-primary);
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .form-field { display: flex; flex-direction: column; gap: 10px; }
+
+    .form-label {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .form-input, .form-select {
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 2px solid transparent;
+      background: rgba(255,255,255,0.1);
+      color: var(--text-primary);
+      font-size: 15px;
+      outline: none;
+      transition: all 0.3s;
+    }
+
+    .form-input:focus, .form-select:focus {
+      border-color: var(--accent);
+      background: rgba(255,255,255,0.15);
+    }
+
+    .form-input::placeholder { color: var(--text-secondary); }
+
+    .form-select option {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    .form-field.full { grid-column: span 2; }
+
+    /* 按钮 */
+    .action-bar {
+      display: flex;
+      gap: 16px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      padding: 14px 32px;
+      border-radius: 12px;
+      border: none;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: var(--gradient-1);
+      color: var(--text-primary);
+    }
+
+    .btn-primary:hover { transform: translateY(-2px); }
+
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+
+    /* 状态面板 */
+    .status-panel {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 32px;
+      display: none;
+    }
+
+    .status-panel.show { display: block; }
+
+    .status-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .status-indicator {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+    }
+
+    .status-indicator.pending { background: var(--text-secondary); }
+    .status-indicator.processing { background: var(--warning); animation: pulse 1s infinite; }
+    .status-indicator.completed { background: var(--success); }
+    .status-indicator.failed { background: var(--error); }
+
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    .status-text {
+      color: var(--text-primary);
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .status-task-id {
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-left: auto;
+    }
+
+    .progress-steps {
+      list-style: none;
+    }
+
+    .progress-step {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 0;
+      color: var(--text-secondary);
+      font-size: 15px;
+    }
+
+    .progress-step.done { color: var(--success); }
+    .progress-step.running { color: var(--warning); }
+
+    .step-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .progress-step.done .step-icon { background: rgba(34, 197, 94, 0.2); }
+    .progress-step.running .step-icon { background: rgba(245, 158, 11, 0.2); }
+
+    .status-result {
+      margin-top: 24px;
+      padding: 16px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.1);
+      font-size: 15px;
+    }
+
+    .status-result.success { color: var(--success); }
+    .status-result.error { color: var(--error); }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-content { padding: 24px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-field.full { grid-column: span 1; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 侧边栏 -->
+  <aside class="sidebar">
+    <div class="logo-area">
+      <div class="logo-icon">📚</div>
+      <span class="logo-text">听书知识库</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-item" onclick="window.location.href='/front_page/chat.html'">
+        <span class="nav-icon">💬</span>
+        <span>智能问答</span>
+      </div>
+      <div class="nav-item active">
+        <span class="nav-icon">📥</span>
+        <span>内容导入</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">📖</span>
+        <span>书籍管理</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">⚙️</span>
+        <span>系统设置</span>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- 主内容 -->
+  <main class="main-content">
+    <header class="page-header">
+      <h1 class="page-title">📥 内容导入</h1>
+      <p class="page-desc">上传书籍资料，自动解析并导入知识库</p>
+    </header>
+
+    <!-- 上传区域 -->
+    <section class="upload-zone" id="uploadZone">
+      <div class="drop-area" id="dropArea">
+        <input type="file" id="fileInput" class="file-input" accept=".md,.txt,.markdown">
+        <div class="drop-icon">📁</div>
+        <div class="drop-text">点击选择文件或拖拽到此处</div>
+        <div class="drop-hint">支持 Markdown 文件 (.md, .txt, .markdown)</div>
+      </div>
+      <div class="file-preview" id="filePreview">
+        <div class="file-icon">📄</div>
+        <div class="file-details">
+          <div class="file-name" id="fileName"></div>
+          <div class="file-size" id="fileSize"></div>
+        </div>
+        <span class="file-remove" id="fileRemove">✕</span>
+      </div>
+    </section>
+
+    <!-- 表单 -->
+    <section class="form-section">
+      <h3 class="form-title">📝 补充信息</h3>
+      <div class="form-grid">
+        <div class="form-field">
+          <label class="form-label">书名（可选）</label>
+          <input class="form-input" id="bookName" placeholder="如：《三体》">
+        </div>
+        <div class="form-field">
+          <label class="form-label">作者（可选）</label>
+          <input class="form-input" id="author" placeholder="如：刘慈欣">
+        </div>
+        <div class="form-field">
+          <label class="form-label">内容类型</label>
+          <select class="form-select" id="contentType">
+            <option value="书籍简介">书籍简介</option>
+            <option value="有声书信息">有声书信息</option>
+            <option value="作者介绍">作者介绍</option>
+            <option value="听书笔记">听书笔记</option>
+            <option value="推荐运营资料">推荐运营资料</option>
+            <option value="用户评论摘要">用户评论摘要</option>
+            <option value="常见问答">常见问答</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label class="form-label">类别标签</label>
+          <input class="form-input" id="category" placeholder="如：科幻、悬疑、历史">
+        </div>
+        <div class="form-field">
+          <label class="form-label">有声书时长</label>
+          <input class="form-input" id="audioDuration" placeholder="如：12小时30分钟">
+        </div>
+        <div class="form-field">
+          <label class="form-label">来源链接</label>
+          <input class="form-input" id="sourceUrl" placeholder="https://...">
+        </div>
+      </div>
+      <div class="action-bar" style="margin-top: 32px;">
+        <button class="btn btn-secondary" id="checkBtn">查询状态</button>
+        <button class="btn btn-primary" id="uploadBtn">开始导入</button>
+      </div>
+    </section>
+
+    <!-- 状态面板 -->
+    <section class="status-panel" id="statusPanel">
+      <div class="status-header">
+        <div class="status-indicator" id="statusIndicator"></div>
+        <span class="status-text" id="statusText">处理中</span>
+        <span class="status-task-id">任务ID: <span id="taskId"></span></span>
+      </div>
+      <ul class="progress-steps" id="progressSteps"></ul>
+      <div class="status-result" id="statusResult"></div>
+    </section>
+  </main>
+
+  <script>
+    const API_BASE = location.protocol + '//' + location.host;
+    const dropArea = document.getElementById('dropArea');
+    const fileInput = document.getElementById('fileInput');
+    const filePreview = document.getElementById('filePreview');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const fileRemove = document.getElementById('fileRemove');
+    const uploadZone = document.getElementById('uploadZone');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const checkBtn = document.getElementById('checkBtn');
+    const statusPanel = document.getElementById('statusPanel');
+    const statusIndicator = document.getElementById('statusIndicator');
+    const statusText = document.getElementById('statusText');
+    const taskIdEl = document.getElementById('taskId');
+    const progressSteps = document.getElementById('progressSteps');
+    const statusResult = document.getElementById('statusResult');
+
+    let selectedFile = null;
+    let currentTaskId = '';
+
+    // 点击选择
+    dropArea.addEventListener('click', () => fileInput.click());
+
+    // 拖拽
+    uploadZone.addEventListener('dragover', e => {
+      e.preventDefault();
+      uploadZone.classList.add('dragover');
+    });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+    uploadZone.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    });
+
+    // 文件选择
+    fileInput.addEventListener('change', e => {
+      if (e.target.files.length) handleFile(e.target.files[0]);
+    });
+
+    // 移除文件
+    fileRemove.addEventListener('click', () => {
+      selectedFile = null;
+      fileInput.value = '';
+      filePreview.classList.remove('show');
+      dropArea.style.display = 'block';
+    });
+
+    function handleFile(file) {
+      const ext = file.name.split('.').pop().toLowerCase();
+      if (!['md', 'txt', 'markdown'].includes(ext)) {
+        alert('请选择 Markdown 文件');
+        return;
+      }
+      selectedFile = file;
+      fileName.textContent = file.name;
+      fileSize.textContent = formatSize(file.size);
+      filePreview.classList.add('show');
+      dropArea.style.display = 'none';
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    // 上传
+    uploadBtn.addEventListener('click', async () => {
+      if (!selectedFile) return alert('请先选择文件');
+
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('content_type', document.getElementById('contentType').value);
+
+      const fields = ['bookName', 'author', 'category', 'audioDuration', 'sourceUrl'];
+      fields.forEach(f => {
+        const val = document.getElementById(f).value.trim();
+        if (val) formData.append(f.replace(/([A-Z])/g, '_$1').toLowerCase(), val);
+      });
+
+      try {
+        const res = await fetch(`${API_BASE}/upload/file`, { method: 'POST', body: formData });
+        if (!res.ok) throw new Error(await res.text());
+        const data = await res.json();
+
+        currentTaskId = data.task_id;
+        taskIdEl.textContent = currentTaskId;
+        statusPanel.classList.add('show');
+        updateStatus('processing', [], ['上传文件']);
+        pollStatus(currentTaskId);
+      } catch (e) {
+        alert('上传失败: ' + e.message);
+      }
+    });
+
+    checkBtn.addEventListener('click', () => {
+      if (!currentTaskId) return alert('请先上传文件');
+      pollStatus(currentTaskId);
+    });
+
+    async function pollStatus(taskId) {
+      try {
+        const res = await fetch(`${API_BASE}/upload/status/${taskId}`);
+        const data = await res.json();
+        updateStatus(data.status, data.done_list, data.running_list);
+
+        if (data.status === 'completed') {
+          statusResult.className = 'status-result success';
+          statusResult.textContent = `✅ 导入完成！共生成 ${data.chunk_count} 个知识切片`;
+        } else if (data.status === 'failed') {
+          statusResult.className = 'status-result error';
+          statusResult.textContent = `❌ 导入失败: ${data.error}`;
+        } else {
+          setTimeout(() => pollStatus(taskId), 1500);
+        }
+      } catch (e) {
+        statusResult.className = 'status-result error';
+        statusResult.textContent = '状态查询失败';
+      }
+    }
+
+    function updateStatus(status, doneList, runningList) {
+      statusIndicator.className = 'status-indicator ' + status;
+      const statusMap = { pending: '等待中', processing: '处理中', completed: '已完成', failed: '失败' };
+      statusText.textContent = statusMap[status] || status;
+
+      progressSteps.innerHTML = '';
+      (doneList || []).forEach(s => progressSteps.innerHTML += `<li class="progress-step done"><span class="step-icon">✓</span>${escapeHtml(s)}</li>`);
+      (runningList || []).forEach(s => progressSteps.innerHTML += `<li class="progress-step running"><span class="step-icon">⟳</span>${escapeHtml(s)}</li>`);
+    }
+
+    function escapeHtml(s) {
+      return String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+    }
+  </script>
+</body>
+</html>
