@@ -12,7 +12,7 @@ from listen_book.utils.embedding_util import generate_hybrid_vectors
 from listen_book.utils.milvus_util import (
     build_hybrid_search_requests,
     execute_hybrid_search,
-    build_book_filter_expr,
+    build_combined_filter_expr,
 )
 from listen_book.core.config import get_settings
 
@@ -44,7 +44,9 @@ class HydeVectorSearchNode(BaseNode):
 
         settings = get_settings()
         query = state.get("rewritten_query", "") or state.get("original_query", "")
-        book_names = state.get("book_names", [])
+        validated_books = state.get("validated_books", [])
+        categories = state.get("categories", [])
+        intent = state.get("intent", "qa")
 
         if not query:
             self.log_step("step2", "无查询内容，返回空结果")
@@ -76,8 +78,12 @@ class HydeVectorSearchNode(BaseNode):
             dense_vector = vectors["dense"][0]
             sparse_vector = vectors["sparse"][0]
 
-            # 构建过滤条件
-            expr = build_book_filter_expr(book_names) if book_names else None
+            # 构建过滤条件（使用验证后的书名和意图）
+            expr = build_combined_filter_expr(
+                book_names=validated_books if validated_books else None,
+                categories=categories if categories else None,
+                intent=intent,
+            )
 
             # 构建检索请求
             requests = build_hybrid_search_requests(

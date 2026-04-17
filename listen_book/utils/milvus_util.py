@@ -146,3 +146,90 @@ def build_content_type_filter_expr(
         types_literal = ", ".join(f'"{t}"' for t in content_types)
         clauses.append(f"content_type in [{types_literal}]")
     return " and ".join(clauses) if clauses else None
+
+
+def build_combined_filter_expr(
+    book_names: Optional[List[str]] = None,
+    categories: Optional[List[str]] = None,
+    content_types: Optional[List[str]] = None,
+    intent: Optional[str] = None,
+) -> Optional[str]:
+    """构建组合过滤表达式，支持书名、类别、意图等多条件过滤。"""
+    clauses = []
+
+    # 书名过滤
+    if book_names:
+        names_literal = ", ".join(f'"{n}"' for n in book_names)
+        clauses.append(f"book_name in [{names_literal}]")
+
+    # 类别过滤
+    if categories:
+        categories_literal = ", ".join(f'"{c}"' for c in categories)
+        clauses.append(f"category in [{categories_literal}]")
+
+    # 内容类型过滤（直接指定）
+    if content_types:
+        types_literal = ", ".join(f'"{t}"' for t in content_types)
+        clauses.append(f"content_type in [{types_literal}]")
+
+    # 意图相关的内容类型偏好
+    if intent == "recommend" and not content_types:
+        # 推荐意图优先检索推荐相关内容
+        clauses.append(f"content_type in [\"书籍简介\", \"推荐运营资料\", \"用户评论摘要\"]")
+    elif intent == "detail" and not content_types:
+        # 详情意图优先检索书籍详情相关内容
+        clauses.append(f"content_type in [\"书籍简介\", \"作者介绍\", \"有声书信息\", \"常见问答\"]")
+
+    return " and ".join(clauses) if clauses else None
+
+
+def search_book_name_collection(
+    client: MilvusClient,
+    collection_name: str,
+    book_name: str,
+    bge_m3: Any,
+    limit: int = 5,
+) -> List[Dict[str, Any]]:
+    """在书名集合中搜索，用于书名对齐验证。"""
+    try:
+        # 生成书名向量
+        vectors = bge_m3.encode([book_name], return_dense=True, return_sparse=True)
+        dense_vector = vectors["dense"][0]
+        sparse_vector = vectors["sparse"][0]
+
+        # 构建检索请求
+        requests = build_hybrid_search_requests(
+            dense_vector=dense_vector,
+            sparse_vector=sparse_vector,
+            limit=limit,
+        )
+
+        # 输出字段
+        output_fields = ["book_name", "author", "category"]
+
+        # 执行检索
+        results = execute_hybrid_search(
+            client=client,
+            collection_name=collection_name,
+            requests=requests,
+            output_fields=output_fields,
+            limit=limit,
+        )
+
+        # 解析结果
+        hits = []
+        if results:
+            for hit_list in results:
+                for hit in hit_list:
+                    entity = hit.get("entity", {})
+                    hits.append({
+                        "book_name": entity.get("book_name", ""),
+                        "author": entity.get("author", ""),
+                        "category": entity.get("category", ""),
+                        "score": hit.get("distance", 0.0),
+                    })
+
+        return hits
+    except Exception as e:
+        logger.warning(f"书名检索失败: {e}")
+        return []

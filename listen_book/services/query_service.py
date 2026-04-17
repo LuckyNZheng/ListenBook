@@ -5,6 +5,7 @@ import logging
 from typing import List, Dict, Any
 
 from listen_book.processor.query_processor.main_graph import query_app
+from listen_book.processor.query_processor.nodes.book_confirmed_node import BookConfirmedNode
 from listen_book.utils.task_util import (
     update_task_status,
     set_task_result,
@@ -14,6 +15,8 @@ from listen_book.utils.task_util import (
     TASK_STATUS_FAILED,
 )
 from listen_book.utils.mongo_history_util import get_recent_messages, clear_history
+from listen_book.utils.redis_cache_util import get_cached_answer, set_cached_answer
+from listen_book.core.config import get_settings
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -21,6 +24,9 @@ logger = logging.getLogger(__name__)
 
 class QueryService:
     """查询服务"""
+
+    # 书名识别节点（用于缓存检查前的快速识别）
+    _book_confirmed_node = BookConfirmedNode()
 
     @staticmethod
     def generate_session_id() -> str:
@@ -30,21 +36,73 @@ class QueryService:
     def generate_task_id() -> str:
         return uuid.uuid4().hex[:12]
 
+    def _quick_identify_books(self, query: str, session_id: str) -> List[str]:
+        """快速识别书名（用于缓存键生成）"""
+        try:
+            # 获取历史对话
+            history = []
+            try:
+                history = get_recent_messages(session_id, limit=5)
+            except Exception:
+                pass
+
+            # 运行书名识别节点
+            state = {
+                "original_query": query,
+                "session_id": session_id,
+                "history": history,
+            }
+            result = self._book_confirmed_node.process(state)
+            return result.get("book_names", [])
+        except Exception as e:
+            logger.warning(f"快速书名识别失败: {e}")
+            return []
+
     def run_query_graph(
         self, session_id: str, task_id: str, query: str, is_stream: bool
     ) -> None:
-        """运行查询流程"""
+        """运行查询流程（带缓存检查）"""
+        settings = get_settings()
         update_task_status(task_id, TASK_STATUS_PROCESSING)
 
+        # 1. 快速识别书名
+        book_names = self._quick_identify_books(query, session_id)
+        logger.info(f"识别书名: {book_names}")
+
+        # 2. 检查缓存（非流式时）
+        if not is_stream and settings.cache_enabled:
+            cached = get_cached_answer(query, book_names)
+            if cached:
+                logger.info(f"缓存命中，直接返回")
+                set_task_result(task_id, "answer", cached.get("answer", ""))
+                update_task_status(task_id, TASK_STATUS_COMPLETED)
+                return
+
+        # 3. 缓存未命中，运行完整流程
         init_state = {
             "session_id": session_id,
             "task_id": task_id,
             "original_query": query,
+            "book_names": book_names,  # 使用已识别的书名
             "is_stream": is_stream,
         }
 
         try:
-            query_app.invoke(init_state)
+            result = query_app.invoke(init_state)
+            answer = result.get("answer", "")
+            sources = result.get("sources", [])
+            rewritten_query = result.get("rewritten_query", "")
+
+            # 4. 写入缓存（非流式时）
+            if not is_stream and settings.cache_enabled:
+                set_cached_answer(
+                    query=query,
+                    book_names=book_names,
+                    answer=answer,
+                    sources=sources,
+                    rewritten_query=rewritten_query,
+                )
+
             update_task_status(task_id, TASK_STATUS_COMPLETED)
         except Exception as e:
             logger.error(f"查询流程异常: {e}")

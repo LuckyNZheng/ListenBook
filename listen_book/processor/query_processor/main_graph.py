@@ -8,6 +8,8 @@ from langgraph.graph.state import CompiledStateGraph
 
 from listen_book.processor.query_processor.state import QueryGraphState
 from listen_book.processor.query_processor.nodes.book_confirmed_node import BookConfirmedNode
+from listen_book.processor.query_processor.nodes.query_rewrite_node import QueryRewriteNode
+from listen_book.processor.query_processor.nodes.book_validation_node import BookValidationNode
 from listen_book.processor.query_processor.nodes.hybrid_vector_search_node import HybridVectorSearchNode
 from listen_book.processor.query_processor.nodes.hyde_vector_search_node import HydeVectorSearchNode
 from listen_book.processor.query_processor.nodes.rrf_merge_node import RrfMergeNode
@@ -21,6 +23,12 @@ def create_query_graph() -> CompiledStateGraph:
     流程结构::
 
         book_confirmed_node
+              │
+              v
+        query_rewrite (利用历史上下文重写查询)
+              │
+              v
+        book_validation (验证书名并对齐知识库)
               │
               v
         multi_search (虚拟节点，分发)
@@ -49,7 +57,9 @@ def create_query_graph() -> CompiledStateGraph:
     # 定义节点
     nodes = {
         "book_confirmed_node": BookConfirmedNode(),
-        "multi_search": lambda x: {},  # 虚拟分发节点
+        "query_rewrite_node": QueryRewriteNode(),
+        "book_validation_node": BookValidationNode(),
+        "multi_search": lambda x: {},  # 虚拟分发节���
         "hybrid_vector_search_node": HybridVectorSearchNode(),
         "hyde_vector_search_node": HydeVectorSearchNode(),
         "join": lambda x: {},  # 虚拟汇合节点
@@ -64,8 +74,10 @@ def create_query_graph() -> CompiledStateGraph:
     # 入口点
     workflow.set_entry_point("book_confirmed_node")
 
-    # 顺序边：书名确认 -> 分发
-    workflow.add_edge("book_confirmed_node", "multi_search")
+    # 顺序边：书名确认 -> 查询重写 -> 书名验证 -> 分发
+    workflow.add_edge("book_confirmed_node", "query_rewrite_node")
+    workflow.add_edge("query_rewrite_node", "book_validation_node")
+    workflow.add_edge("book_validation_node", "multi_search")
 
     # 多路并行分发
     workflow.add_edge("multi_search", "hybrid_vector_search_node")

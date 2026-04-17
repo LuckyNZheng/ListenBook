@@ -10,7 +10,7 @@ from listen_book.utils.client.ai_clients import AIClients
 from listen_book.utils.mongo_history_util import save_chat_message
 from listen_book.utils.task_util import set_task_result
 from listen_book.utils.sse_util import push_sse_event, SSEEvent
-from listen_book.prompts.query_prompt import ANSWER_GENERATION_PROMPT, QUERY_REWRITE_PROMPT
+from listen_book.prompts.query_prompt import ANSWER_GENERATION_PROMPT
 from listen_book.core.config import get_settings
 
 logger = logging.getLogger(__name__)
@@ -51,20 +51,8 @@ class AnswerOutputNode(BaseNode):
         context = self._build_context(docs, settings.max_context_chars)
         self.log_step("step3", f"上下文长度: {len(context)}")
 
-        # 重写查询（可选）
-        rewritten_query = query
-        try:
-            history_text = self._build_history_text(state.get("history", []))
-            rewrite_prompt = QUERY_REWRITE_PROMPT.format(
-                query=query,
-                book_names=book_names,
-                history=history_text
-            )
-            rewritten = llm.invoke(rewrite_prompt).content
-            rewritten_query = rewritten.strip()
-            self.log_step("step4", f"查询重写完成")
-        except Exception as e:
-            self.logger.warning(f"查询重写失败: {e}")
+        # 使用已重写的查询（来自 query_rewrite_node）
+        rewritten_query = state.get("rewritten_query", query)
 
         # 生成答案
         prompt = ANSWER_GENERATION_PROMPT.format(

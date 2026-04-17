@@ -48,6 +48,15 @@ class Settings:
     mongo_url: str = field(default_factory=lambda: os.getenv("MONGO_URL", ""))
     mongo_db_name: str = field(default_factory=lambda: os.getenv("MONGO_DB_NAME", "listten_book"))
 
+    # Redis 缓存
+    redis_url: str = field(default_factory=lambda: os.getenv("REDIS_URL", "redis://localhost:6379/0"))
+    cache_enabled: bool = field(
+        default_factory=lambda: os.getenv("CACHE_ENABLED", "True").lower() in ("true", "1")
+    )
+    cache_expire_seconds: int = field(
+        default_factory=lambda: int(os.getenv("CACHE_EXPIRE_SECONDS", "3600"))  # 默认1小时
+    )
+
     # 向量 & 切分
     embedding_dim: int = field(default_factory=lambda: int(os.getenv("EMBEDDING_DIM", "1024")))
     embedding_batch_size: int = field(

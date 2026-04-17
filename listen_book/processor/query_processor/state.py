@@ -21,8 +21,12 @@ class QueryGraphState(TypedDict):
     authors: List[str]
     categories: List[str]
     scenes: List[str]
+    intent: str  # recommend/detail/qa
     is_explicit_book: bool
     book_confidence: float
+
+    # 书名验证结果
+    validated_books: List[str]  # 对齐后的书名
 
     # 检索结果（多路）
     dense_chunks: List       # 普通向量检索结果
@@ -50,8 +54,10 @@ DEFAULT_STATE: QueryGraphState = {
     "authors": [],
     "categories": [],
     "scenes": [],
+    "intent": "qa",
     "is_explicit_book": False,
     "book_confidence": 0.0,
+    "validated_books": [],
     "dense_chunks": [],
     "hyde_chunks": [],
     "rrf_chunks": [],
