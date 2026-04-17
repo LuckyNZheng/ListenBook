@@ -34,7 +34,7 @@ BOOK_INFO_ENRICH_PROMPT = """你是一位书籍信息专家。请根据以下信
 如果内容片段没有以上信息，那么通过你自己的知识进行补充，实在没有的就填写空字符串
 
 最后请以 JSON 格式返回：
-{
+{{
     "author": "",
     "category": "",
     "audio_duration": "",
@@ -43,7 +43,7 @@ BOOK_INFO_ENRICH_PROMPT = """你是一位书籍信息专家。请根据以下信
     "summary": "",
     "target_audience": "",
     "recommend_reason": ""
-}
+}}
 
 只返回 JSON，不要其他内容。"""
 
@@ -77,7 +77,7 @@ class BookInfoEnrichNode(BaseNode):
             return state
 
         # 取内容样本
-        content_sample = md_content[:3000] if md_content else ""
+        content_sample = md_content[:300] if md_content else ""
 
         if not content_sample and not book_name:
             self.log_step("step2", "缺少内容样本和书名，无法补充")
@@ -88,10 +88,12 @@ class BookInfoEnrichNode(BaseNode):
             prompt = BOOK_INFO_ENRICH_PROMPT.format(
                 book_name=book_name or file_title,
                 file_title=file_title,
-                content_sample=content_sample[:2000] if content_sample else "无内容"
+                content_sample=content_sample[:200] if content_sample else "无内容"
             )
             response = llm.invoke(prompt)
+            print(response)
             result = json.loads(response.content)
+            self.logger.info("通过llm提取书籍信息")
 
             # 补充缺失字段
             enriched_count = 0
@@ -122,10 +124,6 @@ class BookInfoEnrichNode(BaseNode):
 
 
 if __name__ == '__main__':
-    llm = AIClients.get_llm_client(json_mode=True)
-    res= llm.invoke(["你是什么模型"])
-    print(res)
-
 
     node = BookInfoEnrichNode()
 

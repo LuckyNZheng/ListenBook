@@ -92,3 +92,9 @@ class AIClients(BaseClientManager):
         client = FlagReranker(model_name_or_path=model_path, device=device, use_fp16=fp16)
         logger.info(f"Reranker 初始化成功 (device={device})")
         return client
+
+
+if __name__ == '__main__':
+    llm = AIClients.get_llm_client(json_mode=True)
+    res= llm.invoke(["你是什么模型,请回我：{nzmodel：你的模型名} "])
+    print(res)

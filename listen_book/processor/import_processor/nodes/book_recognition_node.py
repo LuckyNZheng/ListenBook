@@ -62,7 +62,6 @@ class BookRecognitionNode(BaseNode):
             state["author"] = result.get("author", "")
             state["category"] = result.get("category", "")
             state["audio_duration"] = result.get("audio_duration", "")
-            state["entry_name"] = result.get("entry_name", file_title)
 
             self.log_step("step3", f"识别结果: 书名={state['book_name']}, 作者={state['author']}")
         except Exception as e:

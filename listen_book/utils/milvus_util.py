@@ -21,12 +21,9 @@ def ensure_chunks_collection(client: MilvusClient, collection_name: str, dim: in
     schema.add_field("book_name", DataType.VARCHAR, max_length=500)
     schema.add_field("author", DataType.VARCHAR, max_length=200)
     schema.add_field("content_type", DataType.VARCHAR, max_length=50)
-    schema.add_field("entry_name", DataType.VARCHAR, max_length=500)
     schema.add_field("category", DataType.VARCHAR, max_length=200)
     schema.add_field("audio_duration", DataType.VARCHAR, max_length=50)
-    schema.add_field("source_file", DataType.VARCHAR, max_length=500)
-    schema.add_field("source_url", DataType.VARCHAR, max_length=1000)
-    # 新增补充字段
+    schema.add_field("source_file", DataType.VARCHAR, max_length=500)    # 新增补充字段
     schema.add_field("publisher", DataType.VARCHAR, max_length=200)
     schema.add_field("publish_year", DataType.VARCHAR, max_length=20)
     schema.add_field("summary", DataType.VARCHAR, max_length=1000)
@@ -63,6 +60,9 @@ def ensure_book_name_collection(client: MilvusClient, collection_name: str, dim:
     schema.add_field("sparse_vector", DataType.SPARSE_FLOAT_VECTOR)
     schema.add_field("book_name", DataType.VARCHAR, max_length=500)
     schema.add_field("author", DataType.VARCHAR, max_length=200)
+    schema.add_field("category", DataType.VARCHAR, max_length=200)
+    schema.add_field("target_audience", DataType.VARCHAR, max_length=200)
+    schema.add_field("audio_duration", DataType.VARCHAR, max_length=200)
 
     index_params = client.prepare_index_params()
     index_params.add_index(

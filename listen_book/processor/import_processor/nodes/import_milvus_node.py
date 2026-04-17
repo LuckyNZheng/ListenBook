@@ -42,14 +42,12 @@ class ImportMilvusNode(BaseNode):
                 "dense_vector": dense_vectors[i],
                 "sparse_vector": sparse_vectors[i],
                 "content": chunk.get("content", ""),
-                "book_name": chunk.get("book_name", ""),
-                "author": chunk.get("author", ""),
-                "content_type": chunk.get("content_type", "书籍简介"),
-                "entry_name": chunk.get("entry_name", ""),
-                "category": chunk.get("category", ""),
-                "audio_duration": chunk.get("audio_duration", ""),
-                "source_file": chunk.get("source_file", ""),
-                "source_url": chunk.get("source_url", ""),
+                "book_name": state.get("book_name", ""),
+                "author": state.get("author", ""),
+                "content_type": state.get("content_type", "书籍简介"),
+                "category": state.get("category", ""),
+                "audio_duration": state.get("audio_duration", ""),
+                "source_file": state.get("source_file", ""),
                 # 补充字段
                 "publisher": state.get("publisher", ""),
                 "publish_year": state.get("publish_year", ""),
@@ -71,6 +69,9 @@ class ImportMilvusNode(BaseNode):
                 "sparse_vector": sparse_vectors[0],
                 "book_name": book_name,
                 "author": state.get("author", ""),
+                "category":state.get("category", ""),
+                "target_audience":state.get("target_audience", ""),
+                "audio_duration":state.get("audio_duration", "")
             }
             client.insert(collection_name=book_name_collection, data=[book_row])
             self.log_step("step3", f"写入书名: {book_name} 到 {book_name_collection}")
