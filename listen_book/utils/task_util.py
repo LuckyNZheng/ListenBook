@@ -23,6 +23,8 @@ _NODE_CN = {
     "import_milvus_node": "写入向量库",
     # 查询
     "book_confirmed_node": "书名确认",
+    "query_rewrite_node": "查询重写",
+    "book_validation_node": "书名验证",
     "hybrid_vector_search_node": "向量检索",
     "hyde_vector_search_node": "HyDE检索",
     "rrf_merge_node": "结果融合",

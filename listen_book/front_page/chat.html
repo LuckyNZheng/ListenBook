@@ -18,7 +18,6 @@
       --gradient-1: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
       --gradient-2: linear-gradient(135deg, #f472b6 0%, #fb7185 100%);
       --gradient-3: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-      --gradient-4: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
       --border-color: #e2e8f0;
       --shadow: 0 2px 8px rgba(0,0,0,0.06);
       --shadow-lg: 0 4px 16px rgba(0,0,0,0.08);
@@ -35,9 +34,9 @@
 
     /* 侧边栏 */
     .sidebar {
-      width: 280px;
+      width: 260px;
       background: var(--bg-secondary);
-      padding: 24px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       border-right: 1px solid var(--border-color);
@@ -47,41 +46,40 @@
     .logo-area {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 32px;
+      gap: 10px;
+      margin-bottom: 24px;
     }
 
     .logo-icon {
-      width: 48px;
-      height: 48px;
+      width: 40px;
+      height: 40px;
       background: var(--gradient-1);
-      border-radius: 12px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 20px;
     }
 
     .logo-text {
       color: var(--text-primary);
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 600;
     }
 
-    .sidebar-nav {
-      flex: 1;
-    }
+    .sidebar-nav { flex: 1; }
 
     .nav-item {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 14px 16px;
-      border-radius: 12px;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 10px;
       color: var(--text-secondary);
       cursor: pointer;
-      transition: all 0.3s;
-      margin-bottom: 8px;
+      transition: all 0.2s;
+      margin-bottom: 6px;
+      font-size: 14px;
     }
 
     .nav-item:hover {
@@ -95,12 +93,10 @@
       box-shadow: var(--shadow);
     }
 
-    .nav-icon {
-      font-size: 20px;
-    }
+    .nav-icon { font-size: 18px; }
 
     .sidebar-footer {
-      padding-top: 24px;
+      padding-top: 20px;
       border-top: 1px solid var(--border-color);
     }
 
@@ -109,7 +105,7 @@
       align-items: center;
       gap: 8px;
       color: var(--text-secondary);
-      font-size: 13px;
+      font-size: 12px;
     }
 
     .status-dot {
@@ -117,12 +113,6 @@
       height: 8px;
       border-radius: 50%;
       background: #22c55e;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
     }
 
     /* 主内容区 */
@@ -135,7 +125,7 @@
 
     /* 聊天头部 */
     .chat-header {
-      padding: 20px 32px;
+      padding: 16px 24px;
       background: var(--bg-secondary);
       border-bottom: 1px solid var(--border-color);
       display: flex;
@@ -146,24 +136,24 @@
 
     .chat-title {
       color: var(--text-primary);
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 500;
     }
 
     .header-actions {
       display: flex;
-      gap: 12px;
+      gap: 8px;
     }
 
     .action-btn {
-      padding: 10px 20px;
-      border-radius: 10px;
+      padding: 8px 16px;
+      border-radius: 8px;
       border: 1px solid var(--border-color);
       background: var(--bg-card);
       color: var(--text-primary);
-      font-size: 14px;
+      font-size: 13px;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.2s;
     }
 
     .action-btn:hover {
@@ -172,26 +162,20 @@
       border-color: var(--accent);
     }
 
-    .action-btn.primary {
-      background: var(--gradient-1);
-      color: #ffffff;
-      border: none;
-    }
-
     /* 消息区域 */
     .messages-area {
       flex: 1;
       overflow-y: auto;
-      padding: 24px 32px;
+      padding: 20px 24px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 16px;
     }
 
     .message {
       display: flex;
-      gap: 16px;
-      max-width: 85%;
+      gap: 12px;
+      max-width: 80%;
     }
 
     .message.user {
@@ -200,13 +184,13 @@
     }
 
     .avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
+      font-size: 16px;
       flex-shrink: 0;
     }
 
@@ -220,19 +204,20 @@
 
     .message-content {
       flex: 1;
+      min-width: 0;
     }
 
     .message-bubble {
-      padding: 16px 20px;
-      border-radius: 18px;
-      line-height: 1.6;
-      font-size: 15px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      line-height: 1.5;
+      font-size: 14px;
     }
 
     .message.bot .message-bubble {
       background: var(--bg-secondary);
       color: var(--text-primary);
-      border-bottom-left-radius: 6px;
+      border-bottom-left-radius: 4px;
       box-shadow: var(--shadow);
       border: 1px solid var(--border-color);
     }
@@ -240,14 +225,14 @@
     .message.user .message-bubble {
       background: var(--gradient-1);
       color: #ffffff;
-      border-bottom-right-radius: 6px;
+      border-bottom-right-radius: 4px;
       box-shadow: var(--shadow);
     }
 
     .message-time {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-secondary);
-      margin-top: 8px;
+      margin-top: 6px;
     }
 
     .message.user .message-time {
@@ -255,14 +240,8 @@
     }
 
     /* Markdown 渲染样式 */
-    .message-bubble strong {
-      font-weight: 600;
-    }
-
-    .message.bubble em {
-      font-style: italic;
-    }
-
+    .message-bubble strong { font-weight: 600; }
+    .message-bubble em { font-style: italic; }
     .message-bubble code {
       padding: 2px 6px;
       border-radius: 4px;
@@ -270,95 +249,64 @@
       font-family: 'SF Mono', 'Consolas', monospace;
       font-size: 0.9em;
     }
-
-    .message.user .message-bubble code {
-      background: rgba(255,255,255,0.2);
-    }
-
+    .message.user .message-bubble code { background: rgba(255,255,255,0.2); }
     .message-bubble pre {
-      padding: 12px;
+      padding: 10px;
       border-radius: 8px;
       background: rgba(0,0,0,0.05);
       overflow-x: auto;
       margin: 8px 0;
     }
-
-    .message.user .message-bubble pre {
-      background: rgba(255,255,255,0.15);
-    }
-
-    .message-bubble pre code {
-      padding: 0;
-      background: none;
-    }
-
-    .message-bubble ul, .message-bubble ol {
-      margin: 8px 0;
-      padding-left: 24px;
-    }
-
-    .message-bubble li {
-      margin: 4px 0;
-    }
-
-    .message-bubble p {
-      margin: 8px 0;
-    }
-
-    .message-bubble p:first-child {
-      margin-top: 0;
-    }
-
-    .message-bubble p:last-child {
-      margin-bottom: 0;
-    }
-
-    .message-bubble a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    .message.user .message-bubble a {
-      color: #ffffff;
-      text-decoration: underline;
-    }
+    .message.user .message-bubble pre { background: rgba(255,255,255,0.15); }
+    .message-bubble pre code { padding: 0; background: none; }
+    .message-bubble ul, .message-bubble ol { margin: 8px 0; padding-left: 20px; }
+    .message-bubble li { margin: 4px 0; }
+    .message-bubble p { margin: 8px 0; }
+    .message-bubble p:first-child { margin-top: 0; }
+    .message-bubble p:last-child { margin-bottom: 0; }
+    .message-bubble a { color: var(--accent); text-decoration: none; }
+    .message.user .message-bubble a { color: #ffffff; text-decoration: underline; }
 
     /* 进度展示 */
     .progress-panel {
-      margin-top: 12px;
-      padding: 12px 16px;
+      margin-top: 10px;
+      padding: 10px 14px;
       background: var(--bg-secondary);
-      border-radius: 12px;
+      border-radius: 10px;
       border: 1px dashed var(--border-color);
       box-shadow: var(--shadow);
+      display: none;
     }
 
+    .progress-panel.show { display: block; }
+
     .progress-title {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--text-secondary);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      user-select: none;
     }
+
+    .progress-title:hover { color: var(--text-primary); }
 
     .progress-list {
       list-style: none;
-      margin-top: 10px;
+      margin-top: 8px;
       display: none;
     }
 
-    .progress-panel.open .progress-list {
-      display: block;
-    }
+    .progress-panel.open .progress-list { display: block; }
 
     .progress-item {
-      font-size: 13px;
-      padding: 6px 0;
+      font-size: 12px;
+      padding: 4px 0;
       color: var(--text-secondary);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .progress-item.done { color: #22c55e; }
@@ -366,7 +314,7 @@
 
     /* 输入区域 */
     .input-area {
-      padding: 20px 32px;
+      padding: 16px 24px;
       background: var(--bg-secondary);
       border-top: 1px solid var(--border-color);
       box-shadow: var(--shadow);
@@ -374,7 +322,7 @@
 
     .input-wrapper {
       display: flex;
-      gap: 16px;
+      gap: 12px;
       align-items: flex-end;
     }
 
@@ -382,22 +330,22 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
     .input-field {
       width: 100%;
-      min-height: 52px;
-      max-height: 150px;
-      padding: 14px 18px;
-      border-radius: 14px;
+      min-height: 44px;
+      max-height: 120px;
+      padding: 12px 16px;
+      border-radius: 12px;
       border: 2px solid var(--border-color);
       background: var(--bg-secondary);
       color: var(--text-primary);
-      font-size: 15px;
+      font-size: 14px;
       resize: none;
       outline: none;
-      transition: all 0.3s;
+      transition: all 0.2s;
     }
 
     .input-field:focus {
@@ -406,25 +354,57 @@
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
 
-    .input-field::placeholder {
-      color: var(--text-secondary);
+    .input-field::placeholder { color: var(--text-secondary); }
+
+    .input-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     .input-hint {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-secondary);
     }
 
+    /* 流式开关样式 */
+    .stream-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      padding: 4px 10px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .stream-toggle:hover {
+      background: var(--bg-card);
+    }
+
+    .stream-toggle input {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: var(--accent);
+    }
+
+    .stream-toggle span {
+      font-size: 13px;
+      color: var(--text-secondary);
+      user-select: none;
+    }
+
     .send-btn {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
       border: none;
       background: var(--gradient-1);
       color: #ffffff;
-      font-size: 22px;
+      font-size: 18px;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -444,13 +424,13 @@
     /* 打字动画 */
     .typing-indicator {
       display: flex;
-      gap: 6px;
-      padding: 8px 0;
+      gap: 4px;
+      padding: 6px 0;
     }
 
     .typing-dot {
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: var(--accent);
       animation: typing-bounce 1.4s infinite;
@@ -461,14 +441,14 @@
 
     @keyframes typing-bounce {
       0%, 60%, 100% { transform: translateY(0); }
-      30% { transform: translateY(-8px); }
+      30% { transform: translateY(-6px); }
     }
 
     /* 响应式 */
     @media (max-width: 768px) {
       .sidebar { display: none; }
-      .messages-area { padding: 16px; }
-      .input-area { padding: 16px; }
+      .messages-area { padding: 12px; }
+      .input-area { padding: 12px; }
     }
   </style>
 </head>
@@ -512,10 +492,6 @@
     <header class="chat-header">
       <h2 class="chat-title">智能问答</h2>
       <div class="header-actions">
-        <label style="display:flex;align-items:center;gap:8px;color:var(--text-secondary);font-size:14px;cursor:pointer;">
-          <input type="checkbox" id="streamToggle" checked style="accent-color:var(--accent);">
-          流式输出
-        </label>
         <button class="action-btn" id="clearBtn">清空对话</button>
       </div>
     </header>
@@ -542,7 +518,13 @@
       <div class="input-wrapper">
         <div class="input-box">
           <textarea class="input-field" id="inputField" placeholder="输入你的问题..." rows="1"></textarea>
-          <span class="input-hint">Enter 发送 · Shift+Enter 换行</span>
+          <div class="input-footer">
+            <span class="input-hint">Enter 发送 · Shift+Enter 换行</span>
+            <label class="stream-toggle">
+              <input type="checkbox" id="streamToggle" checked>
+              <span>流式输出</span>
+            </label>
+          </div>
         </div>
         <button class="send-btn" id="sendBtn">➤</button>
       </div>
@@ -556,6 +538,9 @@
     const sendBtn = document.getElementById('sendBtn');
     const clearBtn = document.getElementById('clearBtn');
     const streamToggle = document.getElementById('streamToggle');
+
+    // 最多显示的消息数量
+    const MAX_VISIBLE_MESSAGES = 20;
 
     let sessionId = localStorage.getItem('lb_session_id');
     if (!sessionId) {
@@ -585,10 +570,21 @@
       }
     }
 
+    // 限制消息数量，保持界面整洁
+    function limitMessages() {
+      const messages = messagesArea.querySelectorAll('.message');
+      if (messages.length > MAX_VISIBLE_MESSAGES) {
+        // 保留欢迎消息，删除其他旧消息
+        for (let i = 1; i < messages.length - MAX_VISIBLE_MESSAGES + 1; i++) {
+          messages[i].remove();
+        }
+      }
+    }
+
     function addMessage(role, text, showProgress = false) {
       const avatarIcon = role === 'user' ? '👤' : '🤖';
       const contentHtml = role === 'bot' && showProgress
-        ? '<div class="typing-indicator"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></span></div>'
+        ? '<div class="typing-indicator"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>'
         : (role === 'bot' ? renderMarkdown(text) : escapeHtml(text));
 
       const msgHtml = `
@@ -596,27 +592,61 @@
           <div class="avatar ${role}">${avatarIcon}</div>
           <div class="message-content">
             <div class="message-bubble">${contentHtml}</div>
-            ${showProgress ? '<div class="progress-panel open"><div class="progress-title">处理进度 ▼</div><ul class="progress-list"></ul></div>' : ''}
+            ${showProgress ? '<div class="progress-panel show open"><div class="progress-title">⏳ 处理中 ▼</div><ul class="progress-list"></ul></div>' : ''}
             <div class="message-time">${formatTime()}</div>
           </div>
         </div>
       `;
       messagesArea.insertAdjacentHTML('beforeend', msgHtml);
+      limitMessages();
       scrollToBottom();
-      return messagesArea.lastElementChild;
+
+      const msgEl = messagesArea.lastElementChild;
+
+      // 绑定进度面板点击事件
+      const progressPanel = msgEl.querySelector('.progress-panel');
+      if (progressPanel) {
+        const progressTitle = msgEl.querySelector('.progress-title');
+        progressTitle.addEventListener('click', () => {
+          progressPanel.classList.toggle('open');
+        });
+      }
+
+      return msgEl;
     }
 
     function updateProgress(msgEl, doneList, runningList, status) {
       const progressList = msgEl.querySelector('.progress-list');
-      if (!progressList) return;
+      const progressPanel = msgEl.querySelector('.progress-panel');
+      if (!progressList || !progressPanel) return;
 
-      const statusText = { processing: '处理中', completed: '已完成', failed: '失败', pending: '等待' };
+      const statusConfig = {
+        processing: { text: '处理中', emoji: '⏳' },
+        completed: { text: '完成', emoji: '✅' },
+        failed: { text: '失败', emoji: '❌' },
+        pending: { text: '等待', emoji: '⏸️' }
+      };
+
+      const config = statusConfig[status] || statusConfig.processing;
       const title = msgEl.querySelector('.progress-title');
-      if (title) title.textContent = `处理进度 (${statusText[status] || status}) ▼`;
+      if (title) {
+        title.textContent = `${config.emoji} ${config.text} ▼`;
+      }
+
+      // 完成或失败后隐藏进度面板
+      if (status === 'completed' || status === 'failed') {
+        setTimeout(() => {
+          progressPanel.classList.remove('show');
+        }, 1500); // 1.5秒后隐藏
+      }
 
       progressList.innerHTML = '';
-      (doneList || []).forEach(item => progressList.innerHTML += `<li class="progress-item done">✅ ${escapeHtml(item)}</li>`);
-      (runningList || []).forEach(item => progressList.innerHTML += `<li class="progress-item running">⏳ ${escapeHtml(item)}</li>`);
+      (doneList || []).forEach(item => {
+        progressList.innerHTML += `<li class="progress-item done">✅ ${escapeHtml(item)}</li>`;
+      });
+      (runningList || []).forEach(item => {
+        progressList.innerHTML += `<li class="progress-item running">⏳ ${escapeHtml(item)}</li>`;
+      });
     }
 
     function finalizeMessage(msgEl, answer, error) {
@@ -625,7 +655,13 @@
       const progress = msgEl.querySelector('.progress-panel');
 
       if (typing) typing.remove();
-      if (progress) progress.classList.remove('open');
+
+      // 隐藏进度面板
+      if (progress) {
+        setTimeout(() => {
+          progress.classList.remove('show');
+        }, 1000);
+      }
 
       if (error) {
         bubble.innerHTML = `<span style="color:#ef4444">❌ ${escapeHtml(error)}</span>`;
@@ -639,7 +675,8 @@
         const res = await fetch(`${API_BASE}/history/${sessionId}`);
         if (!res.ok) return;
         const data = await res.json();
-        (data.items || []).reverse().forEach(item => {
+        const items = (data.items || []).slice(-10); // 只加载最近10条
+        items.reverse().forEach(item => {
           if (item.role === 'user') addMessage('user', item.text);
           else addMessage('bot', item.text);
         });
@@ -680,7 +717,7 @@
 
         es.addEventListener('progress', e => {
           const d = JSON.parse(e.data || '{}');
-          updateProgress(botMsg, d.done_list, d.running_list, d.status);
+          updateProgress(botMsg, d.done_list || [], d.running_list, d.status);
           if (d.status === 'completed') {
             const typing = botMsg.querySelector('.typing-indicator');
             if (typing) typing.remove();
