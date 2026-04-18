@@ -4,6 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>听书知识库</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     :root {
       --bg-primary: #f8fafc;
@@ -251,6 +252,75 @@
 
     .message.user .message-time {
       text-align: right;
+    }
+
+    /* Markdown 渲染样式 */
+    .message-bubble strong {
+      font-weight: 600;
+    }
+
+    .message.bubble em {
+      font-style: italic;
+    }
+
+    .message-bubble code {
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(0,0,0,0.06);
+      font-family: 'SF Mono', 'Consolas', monospace;
+      font-size: 0.9em;
+    }
+
+    .message.user .message-bubble code {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .message-bubble pre {
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.05);
+      overflow-x: auto;
+      margin: 8px 0;
+    }
+
+    .message.user .message-bubble pre {
+      background: rgba(255,255,255,0.15);
+    }
+
+    .message-bubble pre code {
+      padding: 0;
+      background: none;
+    }
+
+    .message-bubble ul, .message-bubble ol {
+      margin: 8px 0;
+      padding-left: 24px;
+    }
+
+    .message-bubble li {
+      margin: 4px 0;
+    }
+
+    .message-bubble p {
+      margin: 8px 0;
+    }
+
+    .message-bubble p:first-child {
+      margin-top: 0;
+    }
+
+    .message-bubble p:last-child {
+      margin-bottom: 0;
+    }
+
+    .message-bubble a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .message.user .message-bubble a {
+      color: #ffffff;
+      text-decoration: underline;
     }
 
     /* 进度展示 */
@@ -505,13 +575,27 @@
       return String(str).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
     }
 
+    function renderMarkdown(text) {
+      if (!text) return '';
+      try {
+        return marked.parse(text);
+      } catch (e) {
+        console.warn('Markdown 解析失败:', e);
+        return escapeHtml(text);
+      }
+    }
+
     function addMessage(role, text, showProgress = false) {
       const avatarIcon = role === 'user' ? '👤' : '🤖';
+      const contentHtml = role === 'bot' && showProgress
+        ? '<div class="typing-indicator"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></span></div>'
+        : (role === 'bot' ? renderMarkdown(text) : escapeHtml(text));
+
       const msgHtml = `
         <div class="message ${role}" id="msg-${Date.now()}">
           <div class="avatar ${role}">${avatarIcon}</div>
           <div class="message-content">
-            <div class="message-bubble">${role === 'bot' && showProgress ? '<div class="typing-indicator"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></span></div>' : escapeHtml(text)}</div>
+            <div class="message-bubble">${contentHtml}</div>
             ${showProgress ? '<div class="progress-panel open"><div class="progress-title">处理进度 ▼</div><ul class="progress-list"></ul></div>' : ''}
             <div class="message-time">${formatTime()}</div>
           </div>
@@ -543,7 +627,11 @@
       if (typing) typing.remove();
       if (progress) progress.classList.remove('open');
 
-      bubble.innerHTML = error ? `<span style="color:#ef4444">❌ ${escapeHtml(error)}</span>` : escapeHtml(answer || '未返回答案');
+      if (error) {
+        bubble.innerHTML = `<span style="color:#ef4444">❌ ${escapeHtml(error)}</span>`;
+      } else {
+        bubble.innerHTML = renderMarkdown(answer || '未返回答案');
+      }
     }
 
     async function loadHistory() {
