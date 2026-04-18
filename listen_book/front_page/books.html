@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>听书知识库 - 书籍管理</title>
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #f1f5f9;
+      --accent: #3b82f6;
+      --accent-light: #60a5fa;
+      --accent-secondary: #10b981;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --gradient-1: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      --gradient-2: linear-gradient(135deg, #f472b6 0%, #fb7185 100%);
+      --gradient-3: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+      --border-color: #e2e8f0;
+      --shadow: 0 2px 8px rgba(0,0,0,0.06);
+      --shadow-lg: 0 4px 16px rgba(0,0,0,0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg-primary);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* 侧边栏 */
+    .sidebar {
+      width: 280px;
+      background: var(--bg-secondary);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .logo-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--gradient-1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .logo-text {
+      color: var(--text-primary);
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .sidebar-nav { flex: 1; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 8px;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+
+    .nav-item.active {
+      background: var(--gradient-1);
+      color: #ffffff;
+      box-shadow: var(--shadow);
+    }
+
+    .nav-icon { font-size: 20px; }
+
+    /* 主内容 */
+    .main-content {
+      flex: 1;
+      padding: 32px 48px;
+      overflow-y: auto;
+    }
+
+    .page-header {
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .page-title {
+      color: var(--text-primary);
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    .page-desc {
+      color: var(--text-secondary);
+      font-size: 15px;
+      margin-top: 4px;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .search-input {
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: 2px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-size: 15px;
+      width: 280px;
+      outline: none;
+      transition: all 0.3s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .refresh-btn {
+      padding: 12px 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .refresh-btn:hover {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
+    /* 统计卡片 */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      color: var(--text-primary);
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .stat-card:nth-child(1) .stat-value { color: var(--accent); }
+    .stat-card:nth-child(2) .stat-value { color: var(--accent-secondary); }
+    .stat-card:nth-child(3) .stat-value { color: #f59e0b; }
+
+    /* 书籍列表 */
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .book-card {
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .book-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .book-title {
+      color: var(--text-primary);
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .book-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .meta-icon { opacity: 0.7; }
+
+    .book-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+    }
+
+    .tag.highlight {
+      background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+      color: var(--accent);
+    }
+
+    .chunk-count {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+      font-size: 13px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 空状态 */
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text-secondary);
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text-secondary);
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-content { padding: 24px; }
+      .page-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+      .search-box { width: 100%; }
+      .search-input { flex: 1; }
+      .books-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 侧边栏 -->
+  <aside class="sidebar">
+    <div class="logo-area">
+      <div class="logo-icon">📚</div>
+      <span class="logo-text">听书知识库</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-item" onclick="window.location.href='/front_page/chat.html'">
+        <span class="nav-icon">💬</span>
+        <span>智能问答</span>
+      </div>
+      <div class="nav-item" onclick="window.location.href='/front_page/import.html'">
+        <span class="nav-icon">📥</span>
+        <span>内容导入</span>
+      </div>
+      <div class="nav-item active">
+        <span class="nav-icon">📖</span>
+        <span>书籍管理</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">⚙️</span>
+        <span>系统设置</span>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- 主内容 -->
+  <main class="main-content">
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">📖 书籍管理</h1>
+        <p class="page-desc">查看知识库中的所有书籍</p>
+      </div>
+      <div class="search-box">
+        <input type="text" class="search-input" id="searchInput" placeholder="搜索书名、作者...">
+        <button class="refresh-btn" id="refreshBtn">🔄 刷新</button>
+      </div>
+    </header>
+
+    <!-- 统计卡片 -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">书籍总数</div>
+        <div class="stat-value" id="totalBooks">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">知识切片</div>
+        <div class="stat-value" id="totalChunks">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">类别数</div>
+        <div class="stat-value" id="totalCategories">0</div>
+      </div>
+    </div>
+
+    <!-- 书籍列表 -->
+    <div class="books-grid" id="booksGrid">
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <div>正在加载书籍列表...</div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const API_BASE = location.protocol + '//' + location.host;
+    const booksGrid = document.getElementById('booksGrid');
+    const searchInput = document.getElementById('searchInput');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const totalBooksEl = document.getElementById('totalBooks');
+    const totalChunksEl = document.getElementById('totalChunks');
+    const totalCategoriesEl = document.getElementById('totalCategories');
+
+    let allBooks = [];
+
+    async function loadBooks() {
+      try {
+        const res = await fetch(`${API_BASE}/books`);
+        const data = await res.json();
+        allBooks = data.books || [];
+
+        updateStats(data);
+        renderBooks(allBooks);
+      } catch (e) {
+        booksGrid.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">❌</div>
+            <div>加载失败: ${e.message}</div>
+          </div>
+        `;
+      }
+    }
+
+    function updateStats(data) {
+      totalBooksEl.textContent = data.total || 0;
+      const totalChunks = allBooks.reduce((sum, b) => sum + (b.chunk_count || 0), 0);
+      totalChunksEl.textContent = totalChunks;
+
+      const categories = new Set();
+      allBooks.forEach(b => b.category && categories.add(b.category));
+      totalCategoriesEl.textContent = categories.size;
+    }
+
+    function renderBooks(books) {
+      if (books.length === 0) {
+        booksGrid.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📚</div>
+            <div>暂无书籍数据</div>
+          </div>
+        `;
+        return;
+      }
+
+      booksGrid.innerHTML = books.map(book => `
+        <div class="book-card" onclick="askAboutBook('${escapeHtml(book.book_name)}')">
+          <div class="book-title">${escapeHtml(book.book_name || '未命名')}</div>
+          <div class="book-meta">
+            ${book.author ? `<div class="meta-item"><span class="meta-icon">✍️</span>${escapeHtml(book.author)}</div>` : ''}
+            ${book.category ? `<div class="meta-item"><span class="meta-icon">🏷️</span>${escapeHtml(book.category)}</div>` : ''}
+            ${book.audio_duration ? `<div class="meta-item"><span class="meta-icon">⏱️</span>${escapeHtml(book.audio_duration)}</div>` : ''}
+          </div>
+          <div class="book-tags">
+            ${(book.content_types || []).map(type => `<span class="tag">${escapeHtml(type)}</span>`).join('')}
+          </div>
+          <div class="chunk-count">
+            <span>📄</span>
+            <span>${book.chunk_count || 0} 个知识切片</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function askAboutBook(bookName) {
+      if (confirm(`想要了解《${bookName}》的详细信息？`)) {
+        // 存储问题到 localStorage，跳转后自动提问
+        localStorage.setItem('lb_ask_question', `告诉我关于《${bookName}》的详细信息`);
+        window.location.href = '/front_page/chat.html';
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll("'", '&#39;');
+    }
+
+    // 搜索功能
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      if (!query) {
+        renderBooks(allBooks);
+        return;
+      }
+
+      const filtered = allBooks.filter(book => {
+        return (book.book_name || '').toLowerCase().includes(query) ||
+               (book.author || '').toLowerCase().includes(query) ||
+               (book.category || '').toLowerCase().includes(query);
+      });
+      renderBooks(filtered);
+    });
+
+    refreshBtn.addEventListener('click', loadBooks);
+
+    // 初始加载
+    loadBooks();
+  </script>
+</body>
+</html>

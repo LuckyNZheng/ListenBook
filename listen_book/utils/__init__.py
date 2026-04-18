@@ -26,6 +26,7 @@ from listen_book.utils.task_util import (
 )
 from listen_book.utils.sse_util import (
     create_sse_queue,
+    get_sse_queue,
     push_sse_event,
     sse_generator,
     SSEEvent,
@@ -51,6 +52,7 @@ __all__ = [
     "TASK_STATUS_COMPLETED",
     "TASK_STATUS_FAILED",
     "create_sse_queue",
+    "get_sse_queue",
     "push_sse_event",
     "sse_generator",
     "SSEEvent",

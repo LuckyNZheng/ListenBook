@@ -16,6 +16,7 @@ from listen_book.utils.task_util import (
 )
 from listen_book.utils.mongo_history_util import get_recent_messages, clear_history
 from listen_book.utils.redis_cache_util import get_cached_answer, set_cached_answer
+from listen_book.utils.sse_util import push_sse_event, SSEEvent, get_sse_queue
 from listen_book.core.config import get_settings
 
 logging.basicConfig(level=logging.INFO)
@@ -69,13 +70,28 @@ class QueryService:
         book_names = self._quick_identify_books(query, session_id)
         logger.info(f"识别书名: {book_names}")
 
-        # 2. 检查缓存（非流式时）
-        if not is_stream and settings.cache_enabled:
+        # 2. 检查缓存（流式和非流式都支持）
+        if settings.cache_enabled:
             cached = get_cached_answer(query, book_names)
             if cached:
                 logger.info(f"缓存命中，直接返回")
-                set_task_result(task_id, "answer", cached.get("answer", ""))
+                cached_answer = cached.get("answer", "")
+                set_task_result(task_id, "answer", cached_answer)
                 update_task_status(task_id, TASK_STATUS_COMPLETED)
+
+                # 流式模式：推送缓存答案
+                if is_stream and get_sse_queue(task_id) is not None:
+                    # 模拟流式输出，分块推送
+                    chunk_size = 50
+                    for i in range(0, len(cached_answer), chunk_size):
+                        chunk = cached_answer[i:i + chunk_size]
+                        push_sse_event(task_id, SSEEvent.DELTA, {"delta": chunk})
+                    # 推送最终事件
+                    push_sse_event(task_id, SSEEvent.FINAL, {
+                        "answer": cached_answer,
+                        "book_names": cached.get("book_names", book_names),
+                        "sources": cached.get("sources", []),
+                    })
                 return
 
         # 3. 缓存未命中，运行完整流程
@@ -93,8 +109,8 @@ class QueryService:
             sources = result.get("sources", [])
             rewritten_query = result.get("rewritten_query", "")
 
-            # 4. 写入缓存（非流式时）
-            if not is_stream and settings.cache_enabled:
+            # 4. 写入缓存（流式和非流式都支持）
+            if settings.cache_enabled:
                 set_cached_answer(
                     query=query,
                     book_names=book_names,

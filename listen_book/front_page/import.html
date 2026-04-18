@@ -6,16 +6,21 @@
   <title>听书知识库 - 内容导入</title>
   <style>
     :root {
-      --bg-primary: #1a1a2e;
-      --bg-secondary: #16213e;
-      --bg-card: #0f3460;
-      --accent: #e94560;
-      --accent-light: #ff6b6b;
-      --text-primary: #ffffff;
-      --text-secondary: #a0a0a0;
-      --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #f1f5f9;
+      --accent: #3b82f6;
+      --accent-light: #60a5fa;
+      --accent-secondary: #10b981;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --gradient-1: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      --gradient-2: linear-gradient(135deg, #f472b6 0%, #fb7185 100%);
+      --gradient-3: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+      --gradient-4: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      --border-color: #e2e8f0;
+      --shadow: 0 2px 8px rgba(0,0,0,0.06);
+      --shadow-lg: 0 4px 16px rgba(0,0,0,0.08);
       --success: #22c55e;
       --warning: #f59e0b;
       --error: #ef4444;
@@ -37,7 +42,8 @@
       padding: 24px;
       display: flex;
       flex-direction: column;
-      border-right: 1px solid rgba(255,255,255,0.1);
+      border-right: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
     }
 
     .logo-area {
@@ -79,13 +85,14 @@
     }
 
     .nav-item:hover {
-      background: rgba(255,255,255,0.1);
+      background: var(--bg-card);
       color: var(--text-primary);
     }
 
     .nav-item.active {
       background: var(--gradient-1);
-      color: var(--text-primary);
+      color: #ffffff;
+      box-shadow: var(--shadow);
     }
 
     .nav-icon { font-size: 20px; }
@@ -115,22 +122,23 @@
 
     /* 上传区域 */
     .upload-zone {
-      background: var(--bg-card);
+      background: var(--bg-secondary);
       border-radius: 20px;
       padding: 40px;
       margin-bottom: 24px;
-      border: 2px solid transparent;
+      border: 2px solid var(--border-color);
       transition: all 0.3s;
+      box-shadow: var(--shadow);
     }
 
     .upload-zone.dragover {
       border-color: var(--accent);
-      background: rgba(233, 69, 96, 0.1);
+      background: rgba(59, 130, 246, 0.05);
     }
 
     .drop-area {
       padding: 60px;
-      border: 2px dashed rgba(255,255,255,0.2);
+      border: 2px dashed var(--border-color);
       border-radius: 16px;
       text-align: center;
       cursor: pointer;
@@ -139,7 +147,7 @@
 
     .drop-area:hover {
       border-color: var(--accent);
-      background: rgba(255,255,255,0.05);
+      background: var(--bg-card);
     }
 
     .drop-icon {
@@ -165,9 +173,10 @@
     .file-preview {
       display: none;
       padding: 20px;
-      background: rgba(255,255,255,0.1);
+      background: var(--bg-card);
       border-radius: 12px;
       margin-top: 20px;
+      border: 1px solid var(--border-color);
     }
 
     .file-preview.show { display: flex; align-items: center; gap: 16px; }
@@ -205,10 +214,12 @@
 
     /* 表单区域 */
     .form-section {
-      background: var(--bg-card);
+      background: var(--bg-secondary);
       border-radius: 20px;
       padding: 32px;
       margin-bottom: 24px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
     }
 
     .form-title {
@@ -237,8 +248,8 @@
     .form-input, .form-select {
       padding: 14px 18px;
       border-radius: 12px;
-      border: 2px solid transparent;
-      background: rgba(255,255,255,0.1);
+      border: 2px solid var(--border-color);
+      background: var(--bg-secondary);
       color: var(--text-primary);
       font-size: 15px;
       outline: none;
@@ -247,7 +258,8 @@
 
     .form-input:focus, .form-select:focus {
       border-color: var(--accent);
-      background: rgba(255,255,255,0.15);
+      background: var(--bg-secondary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
 
     .form-input::placeholder { color: var(--text-secondary); }
@@ -278,7 +290,8 @@
 
     .btn-primary {
       background: var(--gradient-1);
-      color: var(--text-primary);
+      color: #ffffff;
+      box-shadow: var(--shadow);
     }
 
     .btn-primary:hover { transform: translateY(-2px); }
@@ -286,18 +299,21 @@
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
     .btn-secondary {
-      background: rgba(255,255,255,0.1);
+      background: var(--bg-card);
       color: var(--text-primary);
+      border: 1px solid var(--border-color);
     }
 
-    .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+    .btn-secondary:hover { background: var(--accent); color: #ffffff; border-color: var(--accent); }
 
     /* 状态面板 */
     .status-panel {
-      background: var(--bg-card);
+      background: var(--bg-secondary);
       border-radius: 20px;
       padding: 32px;
       display: none;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
     }
 
     .status-panel.show { display: block; }
@@ -358,7 +374,7 @@
       align-items: center;
       justify-content: center;
       font-size: 16px;
-      background: rgba(255,255,255,0.1);
+      background: var(--bg-card);
     }
 
     .progress-step.done .step-icon { background: rgba(34, 197, 94, 0.2); }
@@ -368,8 +384,9 @@
       margin-top: 24px;
       padding: 16px;
       border-radius: 12px;
-      background: rgba(255,255,255,0.1);
+      background: var(--bg-card);
       font-size: 15px;
+      border: 1px solid var(--border-color);
     }
 
     .status-result.success { color: var(--success); }
@@ -401,7 +418,7 @@
         <span class="nav-icon">📥</span>
         <span>内容导入</span>
       </div>
-      <div class="nav-item">
+      <div class="nav-item" onclick="window.location.href='/front_page/books.html'">
         <span class="nav-icon">📖</span>
         <span>书籍管理</span>
       </div>

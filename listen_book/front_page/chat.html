@@ -6,16 +6,21 @@
   <title>听书知识库</title>
   <style>
     :root {
-      --bg-primary: #1a1a2e;
-      --bg-secondary: #16213e;
-      --bg-card: #0f3460;
-      --accent: #e94560;
-      --accent-light: #ff6b6b;
-      --text-primary: #ffffff;
-      --text-secondary: #a0a0a0;
-      --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #f1f5f9;
+      --accent: #3b82f6;
+      --accent-light: #60a5fa;
+      --accent-secondary: #10b981;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --gradient-1: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      --gradient-2: linear-gradient(135deg, #f472b6 0%, #fb7185 100%);
+      --gradient-3: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+      --gradient-4: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      --border-color: #e2e8f0;
+      --shadow: 0 2px 8px rgba(0,0,0,0.06);
+      --shadow-lg: 0 4px 16px rgba(0,0,0,0.08);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,7 +39,8 @@
       padding: 24px;
       display: flex;
       flex-direction: column;
-      border-right: 1px solid rgba(255,255,255,0.1);
+      border-right: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
     }
 
     .logo-area {
@@ -78,13 +84,14 @@
     }
 
     .nav-item:hover {
-      background: rgba(255,255,255,0.1);
+      background: var(--bg-card);
       color: var(--text-primary);
     }
 
     .nav-item.active {
       background: var(--gradient-1);
-      color: var(--text-primary);
+      color: #ffffff;
+      box-shadow: var(--shadow);
     }
 
     .nav-icon {
@@ -93,7 +100,7 @@
 
     .sidebar-footer {
       padding-top: 24px;
-      border-top: 1px solid rgba(255,255,255,0.1);
+      border-top: 1px solid var(--border-color);
     }
 
     .status-indicator {
@@ -129,10 +136,11 @@
     .chat-header {
       padding: 20px 32px;
       background: var(--bg-secondary);
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      border-bottom: 1px solid var(--border-color);
       display: flex;
       align-items: center;
       justify-content: space-between;
+      box-shadow: var(--shadow);
     }
 
     .chat-title {
@@ -149,8 +157,8 @@
     .action-btn {
       padding: 10px 20px;
       border-radius: 10px;
-      border: none;
-      background: rgba(255,255,255,0.1);
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
       color: var(--text-primary);
       font-size: 14px;
       cursor: pointer;
@@ -159,10 +167,14 @@
 
     .action-btn:hover {
       background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
     }
 
     .action-btn.primary {
       background: var(--gradient-1);
+      color: #ffffff;
+      border: none;
     }
 
     /* 消息区域 */
@@ -217,15 +229,18 @@
     }
 
     .message.bot .message-bubble {
-      background: var(--bg-card);
+      background: var(--bg-secondary);
       color: var(--text-primary);
       border-bottom-left-radius: 6px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-color);
     }
 
     .message.user .message-bubble {
       background: var(--gradient-1);
-      color: var(--text-primary);
+      color: #ffffff;
       border-bottom-right-radius: 6px;
+      box-shadow: var(--shadow);
     }
 
     .message-time {
@@ -242,9 +257,10 @@
     .progress-panel {
       margin-top: 12px;
       padding: 12px 16px;
-      background: rgba(255,255,255,0.05);
+      background: var(--bg-secondary);
       border-radius: 12px;
-      border: 1px dashed rgba(255,255,255,0.1);
+      border: 1px dashed var(--border-color);
+      box-shadow: var(--shadow);
     }
 
     .progress-title {
@@ -282,7 +298,8 @@
     .input-area {
       padding: 20px 32px;
       background: var(--bg-secondary);
-      border-top: 1px solid rgba(255,255,255,0.1);
+      border-top: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
     }
 
     .input-wrapper {
@@ -304,8 +321,8 @@
       max-height: 150px;
       padding: 14px 18px;
       border-radius: 14px;
-      border: 2px solid transparent;
-      background: rgba(255,255,255,0.1);
+      border: 2px solid var(--border-color);
+      background: var(--bg-secondary);
       color: var(--text-primary);
       font-size: 15px;
       resize: none;
@@ -315,7 +332,8 @@
 
     .input-field:focus {
       border-color: var(--accent);
-      background: rgba(255,255,255,0.15);
+      background: var(--bg-secondary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
 
     .input-field::placeholder {
@@ -333,13 +351,14 @@
       border-radius: 14px;
       border: none;
       background: var(--gradient-1);
-      color: var(--text-primary);
+      color: #ffffff;
       font-size: 22px;
       cursor: pointer;
       transition: all 0.3s;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: var(--shadow);
     }
 
     .send-btn:hover {
@@ -400,7 +419,7 @@
         <span class="nav-icon">📥</span>
         <span>内容导入</span>
       </div>
-      <div class="nav-item">
+      <div class="nav-item" onclick="window.location.href='/front_page/books.html'">
         <span class="nav-icon">📖</span>
         <span>书籍管理</span>
       </div>
@@ -628,6 +647,14 @@
 
     loadHistory();
     inputField.focus();
+
+    // 检查是否有待提问的问题（从书籍管理页面跳转过来）
+    const pendingQuestion = localStorage.getItem('lb_ask_question');
+    if (pendingQuestion) {
+      localStorage.removeItem('lb_ask_question');
+      inputField.value = pendingQuestion;
+      setTimeout(() => sendMessage(), 300);
+    }
   </script>
 </body>
 </html>

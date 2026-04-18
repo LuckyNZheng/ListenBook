@@ -17,6 +17,7 @@ from listen_book.services.query_service import QueryService
 from listen_book.services.import_service import ImportService
 from listen_book.utils.sse_util import create_sse_queue, sse_generator
 from listen_book.utils.task_util import get_task_info, get_task_result, TASK_STATUS_FAILED
+from listen_book.utils.client.storage_clients import StorageClients
 
 logger = logging.getLogger(__name__)
 
@@ -211,3 +212,57 @@ def register_router(app: FastAPI) -> None:
             error=info.get("error", ""),
             chunk_count=info.get("chunk_count", 0),
         )
+
+    # ---------- 书籍管理接口 ----------
+    @app.get("/books")
+    async def get_books():
+        """获取所有书籍列表"""
+        try:
+            from listen_book.core.config import get_settings
+            settings = get_settings()
+            client = StorageClients.get_milvus_client()
+            collection_name = settings.chunks_collection
+
+            # 查询所有唯一的书名
+            results = client.query(
+                collection_name=collection_name,
+                filter="",  # 无过滤条件，获取所有数据
+                output_fields=["book_name", "author", "category", "content_type", "audio_duration", "source_file"],
+                limit=10000,  # 设置较大的限制
+            )
+
+            # 按书名去重并统计
+            books = {}
+            for item in results:
+                book_name = item.get("book_name", "")
+                if not book_name:
+                    continue
+
+                if book_name not in books:
+                    books[book_name] = {
+                        "book_name": book_name,
+                        "author": item.get("author", ""),
+                        "category": item.get("category", ""),
+                        "audio_duration": item.get("audio_duration", ""),
+                        "content_types": set(),
+                        "chunk_count": 0,
+                    }
+                books[book_name]["content_types"].add(item.get("content_type", ""))
+                books[book_name]["chunk_count"] += 1
+
+            # 转换为列表
+            book_list = []
+            for book in books.values():
+                book["content_types"] = list(book["content_types"])
+                book_list.append(book)
+
+            # 按书名排序
+            book_list.sort(key=lambda x: x["book_name"])
+
+            return {
+                "total": len(book_list),
+                "books": book_list
+            }
+        except Exception as e:
+            logger.error(f"查询书籍列表失败: {e}")
+            raise HTTPException(status_code=500, detail=f"查询书籍列表失败: {e}")
