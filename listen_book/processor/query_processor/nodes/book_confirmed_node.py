@@ -31,6 +31,7 @@ class BookConfirmedNode(BaseNode):
         history = []
         try:
             history = get_recent_messages(session_id, limit=5)
+            self.logger.info(f"获取到的历史对话有: {history[:100]}")
         except Exception as e:
             self.logger.warning(f"获取历史失败: {e}")
 
@@ -64,7 +65,13 @@ class BookConfirmedNode(BaseNode):
             llm = AIClients.get_llm_client(json_mode=True)
             prompt = BOOK_RECOGNITION_PROMPT.format(query=query)
             response = llm.invoke(prompt)
-            parsed = json.loads(response.content)
+
+            # 获取原始返回内容
+            raw_content = response.content
+            self.log_step("step_raw", f"LLM原始返回: {raw_content[:200]}...")
+
+            # 尝试解析 JSON（处理可能的格式问题）
+            parsed = self._parse_json_response(raw_content)
 
             result["book_names"] = parsed.get("book_names", [])
             result["authors"] = parsed.get("authors", [])
@@ -81,3 +88,43 @@ class BookConfirmedNode(BaseNode):
             self.log_step("step2", f"LLM 识别异常: {e}")
 
         return result
+
+    def _parse_json_response(self, raw_content: str) -> Dict[str, Any]:
+        """解析 LLM 返回的 JSON，处理可能的格式问题"""
+        import re
+
+        # 1. 直接尝试解析
+        try:
+            return json.loads(raw_content)
+        except json.JSONDecodeError:
+            pass
+
+        # 2. 提取 JSON 对象（可能被其他文本包裹）
+        json_pattern = r'\{[^{}]*\}'
+        matches = re.findall(json_pattern, raw_content, re.DOTALL)
+        if matches:
+            # 找最长的匹配（通常是完整 JSON）
+            for match in sorted(matches, key=len, reverse=True):
+                try:
+                    return json.loads(match)
+                except json.JSONDecodeError:
+                    continue
+
+        # 3. 尝试修复常见问题
+        cleaned = raw_content.strip()
+        # 移除可能的前缀文本
+        if '```json' in cleaned:
+            cleaned = re.sub(r'^.*?```json\s*', '', cleaned)
+            cleaned = re.sub(r'\s*```.*$', '', cleaned)
+        if '```' in cleaned:
+            cleaned = re.sub(r'^.*?```\s*', '', cleaned)
+            cleaned = re.sub(r'\s*```.*$', '', cleaned)
+
+        try:
+            return json.loads(cleaned)
+        except json.JSONDecodeError:
+            pass
+
+        # 4. 返回空结果
+        self.logger.warning(f"无法解析 JSON: {raw_content[:100]}")
+        return {}

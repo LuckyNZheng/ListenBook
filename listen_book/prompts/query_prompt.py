@@ -18,15 +18,7 @@ BOOK_RECOGNITION_PROMPT = """你是一个听书平台的书籍识别专家。用
 - qa：用户询问某个知识点或一般性问题，如"什么是科幻小说"、"刘慈欣是谁"
 
 请以 JSON 格式返回结果：
-{
-    "book_names": ["识别到的书名列表，如果没有则为空数组"],
-    "authors": ["识别到的作者名列表"],
-    "categories": ["识别到的类别列表"],
-    "scenes": ["识别到的场景列表"],
-    "intent": "recommend/detail/qa",
-    "is_explicit": true或false，表示书名是否明确指定,
-    "confidence": 0.0-1.0之间的置信度
-}
+{{"book_names": ["识别到的书名列表，如果没有则为空数组"], "authors": ["识别到的作者名列表"], "categories": ["识别到的类别列表"], "scenes": ["识别到的场景列表"], "intent": "recommend/detail/qa", "is_explicit": true或false, "confidence": 0.0-1.0}}
 
 只返回 JSON，不要其他解释。"""
 
